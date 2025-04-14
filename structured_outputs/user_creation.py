@@ -6,12 +6,13 @@ Modified from https://ollama.com/blog/structured-outputs
 from ollama import chat
 from pydantic import BaseModel
 import sys
+from typing import Optional
 
 class User(BaseModel):
-  name: str
-  age: int | None
-  job: str | None
-  hobbies: str | None
+  name: Optional[str] = None
+  age: Optional[int] = None
+  job: Optional[str] = None
+  hobbies: Optional[str] = None
  
 class UserList(BaseModel):
   users: list[User]
@@ -24,9 +25,11 @@ def get_users(prompt: str) -> UserList:
         'content': prompt
         }
     ],
-    model='llama3.1',
-    format=User
+    model='gemma3:1b',
+    format=User.model_json_schema()
     )
+
+    print(response.message.content)
     
     users = UserList.model_validate_json(response.message.content)
 
