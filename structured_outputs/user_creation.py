@@ -11,15 +11,18 @@ from typing import Optional
 class User(BaseModel):
   name: Optional[str] = None
   age: Optional[int] = None
-  job: Optional[str] = None
   hobbies: Optional[str] = None
  
-class UserList(BaseModel):
-  users: list[User]
+# class UserList(BaseModel):
+#   users: list[User]
 
-def get_users(prompt: str) -> UserList:
+def get_users(prompt: str) -> User:
     response = chat(
     messages=[
+       {
+          'role': 'system',
+          'content' : 'respond in JSON, with the fields name, age, hobbies (if provided)'
+       },
         {
         'role': 'user',
         'content': prompt
@@ -31,7 +34,7 @@ def get_users(prompt: str) -> UserList:
 
     print(response.message.content)
     
-    users = UserList.model_validate_json(response.message.content)
+    users = User.model_validate_json(response.message.content)
 
     return users
 
